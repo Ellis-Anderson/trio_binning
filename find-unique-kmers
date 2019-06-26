@@ -62,9 +62,6 @@ def run_kmc(infile_path, outfile_path, k, threads=1, kmc_path='kmc',
                 'your PATH or specified by the --path-to-kmc option.',
                 file=sys.stderr)
         sys.exit(1)
-    finally:
-        # clean up temp file
-        os.remove(paths_list_file_path)
 
 def analyze_histogram(kmc_db, kmc_path='kmc', scratch_path='.'):
     """
@@ -177,10 +174,9 @@ def main():
     for hap_ID, haplotype_files_string in zip(['A', 'B'], args.read_files):
         print('\033[92mCounting k-mers in haplotype {}...\033[0m'
                 .format(hap_ID), file=sys.stderr)
-        haplotype_files = haplotype_files_string.split(',')
-        print(haplotype_files)
+        print(haplotype_files_string)
         outfile_path = "{}/haplotype{}".format(args.outpath, hap_ID)
-        run_kmc(haplotype_files, outfile_path, args.kmer_size,
+        run_kmc(haplotype_files_string, outfile_path, args.kmer_size,
                 args.threads, args.path_to_kmc, args.scratch_dir)
 
         # get the histogram for this haplotype and analyze it
