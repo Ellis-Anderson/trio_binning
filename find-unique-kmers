@@ -37,7 +37,7 @@ def parse_args():
             'be in fasta or fastq format, and uncompressed or gzipped.')
     return parser.parse_args()
 
-def run_kmc(infile_paths, outfile_path, k, threads=1, kmc_path='kmc',
+def run_kmc(infile_path, outfile_path, k, threads=1, kmc_path='kmc',
         scratch_dir='.'):
     """
     Given a list of input fastq files, run kmc on them.
@@ -51,16 +51,9 @@ def run_kmc(infile_paths, outfile_path, k, threads=1, kmc_path='kmc',
     - scratch_dir: path for large temporary files
     """
 
-    # write a list of input file paths to a temporary file
-    infile_rand_int = str(random.randint(0, 9999999))
-    paths_list_file_path = "{}/{}".format(scratch_dir, infile_rand_int)
-    with open(paths_list_file_path, 'w') as f:
-        for path in infile_paths:
-            print(path, file=f)
-
     # run kmc
     kmc_cmd = [kmc_path, '-fm', '-k{}'.format(k), '-t{}'.format(threads),
-               paths_list_file_path, outfile_path, scratch_dir]
+               infile_path, outfile_path, scratch_dir]
 
     try:
         check_call(kmc_cmd)
@@ -185,6 +178,7 @@ def main():
         print('\033[92mCounting k-mers in haplotype {}...\033[0m'
                 .format(hap_ID), file=sys.stderr)
         haplotype_files = haplotype_files_string.split(',')
+        print(haplotype_files)
         outfile_path = "{}/haplotype{}".format(args.outpath, hap_ID)
         run_kmc(haplotype_files, outfile_path, args.kmer_size,
                 args.threads, args.path_to_kmc, args.scratch_dir)
